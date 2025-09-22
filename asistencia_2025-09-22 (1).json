@@ -1,0 +1,209 @@
+{
+  "date": "22/9/2025",
+  "students": [
+    {
+      "id": 1,
+      "name": "Alviz Garay María Celeste",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 2,
+      "name": "Arbildo Rengifo Jhon Anthony",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 3,
+      "name": "Battistini Paredes Julio Daniel",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 4,
+      "name": "Bolaños Rios Noelia Estefani",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 5,
+      "name": "Cachique Salvatierra Walter Sebastian",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 6,
+      "name": "Carranza Tangoa Jammyle",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 7,
+      "name": "Chavez Ochoa Jackson Leonel",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 8,
+      "name": "Cobos Panduro Eberlin Erit",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 9,
+      "name": "Curto Yuyarima Carito Katiuska",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 10,
+      "name": "Deza Suarez Sharlene Katmia",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 11,
+      "name": "Duque Paniora Carlos Adrian",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 12,
+      "name": "Espinoza Ramirez Adriano David",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 13,
+      "name": "García Diaz Jesús Enrique Alonso",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 14,
+      "name": "Jacobo Martel Liz Lizbeth",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 15,
+      "name": "León Carbajal María Cristina",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 16,
+      "name": "Macedo Macedo Cristiam Saul",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 17,
+      "name": "Marina Vega Sandra Patricia",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 18,
+      "name": "Melgarejo Huaman Anlley Sileny",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 19,
+      "name": "Muñoz Maldonado Jhaneth",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 20,
+      "name": "Pacaya Tanami Marina Elena",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 21,
+      "name": "Panaifo Agustin Angelo Jhair",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 22,
+      "name": "Panduro Ramos Lucy Ivonny",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 23,
+      "name": "Perez Zegarra Genesis Valentina",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 24,
+      "name": "Pezo Lomas Erick Lander",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 25,
+      "name": "Ramirez Espino Adrian Nicolay",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 26,
+      "name": "Reategui Pinedo Angel Gabriel",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 27,
+      "name": "Rioja Vargas Jastin Isaac",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 28,
+      "name": "Rivera Mori Maxi Leonel",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 29,
+      "name": "Rodriguez Rodriguez Leonardo",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 30,
+      "name": "Rodriguez Tuesta Edwin Domingo",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 31,
+      "name": "Ruiz Pinedo Hector Alexander",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 32,
+      "name": "Sevillano Flores John Erick",
+      "status": "falta",
+      "time": null
+    },
+    {
+      "id": 33,
+      "name": "Zumaeta Alva Matias Tiziano",
+      "status": "falta",
+      "time": null
+    }
+  ],
+  "summary": {
+    "present": 0,
+    "late": 0,
+    "absent": 33,
+    "total": 33
+  }
+}
