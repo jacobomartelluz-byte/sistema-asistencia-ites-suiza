@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Control de Asistencia - ITES Suiza</title>
+    <title>Sistema de Control de Asistencia</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
@@ -22,19 +23,617 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
     <div class="max-w-6xl mx-auto">
-        <!-- Header ACTUALIZADO -->
+        <!-- Header -->
         <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-indigo-800 mb-1">INSTITUTO TECNOLÓGICO DE EDUCACIÓN SUPERIOR SUIZA</h1>
-                    <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-2">CONTROL DE ASISTENCIA DSI II</h2>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Control de Asistencia</h1>
                     <p class="text-gray-600 flex items-center gap-2">
                         📅 <span id="currentDate"></span>
                     </p>
                 </div>
                 <div class="text-right">
                     <div class="text-3xl font-bold text-indigo-600" id="attendanceCount">0/33</div>
-                    <p class="text-sm text-gray-500">Estudiantes presentes</p>
+                    <p class="text-sm text-gray-500">Estudiantes que asistieron</p>
                 </div>
             </div>
         </div>
+
+        <!-- Time Control Section -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Control de Horarios</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div class="p-4 bg-green-100 rounded-lg">
+                    <div class="text-lg font-bold text-green-700">7:30 AM</div>
+                    <div class="text-sm text-green-600">Hora de Entrada</div>
+                    <div class="text-xs text-green-500 mt-1">Hasta 7:40 AM = Presente</div>
+                </div>
+                <div class="p-4 bg-yellow-100 rounded-lg">
+                    <div class="text-lg font-bold text-yellow-700">7:40 - 8:00 AM</div>
+                    <div class="text-sm text-yellow-600">Tardanza</div>
+                    <div class="text-xs text-yellow-500 mt-1">Llega tarde pero asiste</div>
+                </div>
+                <div class="p-4 bg-red-100 rounded-lg">
+                    <div class="text-lg font-bold text-red-700">Después 8:00 AM</div>
+                    <div class="text-sm text-red-600">Falta</div>
+                    <div class="text-xs text-red-500 mt-1">Ausencia registrada</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scanner Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <!-- QR Scanner -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Escáner QR</h3>
+                <button id="qrScanBtn" class="w-full p-4 rounded-lg font-semibold transition-all duration-300 bg-blue-500 hover:bg-blue-600 text-white transform hover:scale-105">
+                    📱 Escanear Código QR
+                </button>
+                <div id="qrScanner" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+                    <div class="animate-pulse h-32 bg-gray-300 rounded mb-2"></div>
+                    <p class="text-center text-sm text-gray-600">Cámara activa</p>
+                </div>
+            </div>
+
+            <!-- Facial Recognition -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Reconocimiento Facial</h3>
+                <button id="faceRecognitionBtn" class="w-full p-4 rounded-lg font-semibold transition-all duration-300 bg-green-500 hover:bg-green-600 text-white transform hover:scale-105">
+                    📸 Acceso Facial
+                </button>
+                <div id="faceScanner" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+                    <div class="animate-pulse h-32 bg-gray-300 rounded mb-2"></div>
+                    <p class="text-center text-sm text-gray-600">Reconocimiento en curso</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan Result -->
+        <div id="scanResult" class="bg-blue-100 border border-blue-300 rounded-lg p-4 mb-6 hidden">
+            <p class="text-blue-800 text-center font-medium" id="scanResultText"></p>
+        </div>
+
+        <!-- Controls -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="flex flex-wrap gap-4 justify-between items-center">
+                <div class="flex gap-2">
+                    <button id="addStudentBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2">
+                        ➕ Agregar Estudiante
+                    </button>
+                    
+                    <button id="resetAttendanceBtn" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                        🔄 Resetear Asistencia
+                    </button>
+                    
+                    <button id="exportBtn" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                        📊 Exportar
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                    👥 Total: <span id="totalStudents">33</span> estudiantes
+                </div>
+            </div>
+
+            <!-- Add Student Form -->
+            <div id="addStudentForm" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
+                <div class="flex gap-2">
+                    <input type="text" id="newStudentName" placeholder="Nombre completo del estudiante" class="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button id="confirmAddBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">Agregar</button>
+                    <button id="cancelAddBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student List -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800">Lista de Estudiantes</h2>
+            </div>
+            
+            <div class="max-h-96 overflow-y-auto" id="studentList">
+                <!-- Los estudiantes se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="mt-6 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Resumen del Día</h3>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="text-center p-4 bg-green-100 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600" id="presentCount">0</div>
+                    <div class="text-sm text-green-800">Presentes</div>
+                </div>
+                <div class="text-center p-4 bg-yellow-100 rounded-lg">
+                    <div class="text-2xl font-bold text-yellow-600" id="lateCount">0</div>
+                    <div class="text-sm text-yellow-800">Tardanzas</div>
+                </div>
+                <div class="text-center p-4 bg-red-100 rounded-lg">
+                    <div class="text-2xl font-bold text-red-600" id="absentCount">0</div>
+                    <div class="text-sm text-red-800">Faltas</div>
+                </div>
+                <div class="text-center p-4 bg-blue-100 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600" id="attendancePercentage">0%</div>
+                    <div class="text-sm text-blue-800">Asistencia</div>
+                </div>
+                <div class="text-center p-4 bg-purple-100 rounded-lg">
+                    <div class="text-2xl font-bold text-purple-600" id="totalCount">33</div>
+                    <div class="text-sm text-purple-800">Total</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lista inicial de estudiantes
+
+        let students = [
+            { id: 1, name: "Alviz Garay María Celeste", status: "ausente", time: null },
+            { id: 2, name: "Arbildo Rengifo Jhon Anthony", status: "ausente", time: null },
+            { id: 3, name: "Battistini Paredes Julio Daniel", status: "ausente", time: null },
+            { id: 4, name: "Bolaños Rios Noelia Estefani", status: "ausente", time: null },
+            { id: 5, name: "Cachique Salvatierra Walter Sebastian", status: "ausente", time: null },
+            { id: 6, name: "Carranza Tangoa Jammyle", status: "ausente", time: null },
+            { id: 7, name: "Chavez Ochoa Jackson Leonel", status: "ausente", time: null },
+            { id: 8, name: "Cobos Panduro Eberlin Erit", status: "ausente", time: null },
+            { id: 9, name: "Curto Yuyarima Carito Katiuska", status: "ausente", time: null },
+            { id: 10, name: "Deza Suarez Sharlene Katmia", status: "ausente", time: null },
+            { id: 11, name: "Duque Paniora Carlos Adrian", status: "ausente", time: null },
+            { id: 12, name: "Espinoza Ramirez Adriano David", status: "ausente", time: null },
+            { id: 13, name: "García Diaz Jesús Enrique Alonso", status: "ausente", time: null },
+            { id: 14, name: "Jacobo Martel Liz Lizbeth", status: "ausente", time: null },
+            { id: 15, name: "León Carbajal María Cristina", status: "ausente", time: null },
+            { id: 16, name: "Macedo Macedo Cristiam Saul", status: "ausente", time: null },
+            { id: 17, name: "Marina Vega Sandra Patricia", status: "ausente", time: null },
+            { id: 18, name: "Melgarejo Huaman Anlley Sileny", status: "ausente", time: null },
+            { id: 19, name: "Muñoz Maldonado Jhaneth", status: "ausente", time: null },
+            { id: 20, name: "Pacaya Tanami Marina Elena", status: "ausente", time: null },
+            { id: 21, name: "Panaifo Agustin Angelo Jhair", status: "ausente", time: null },
+            { id: 22, name: "Panduro Ramos Lucy Ivonny", status: "ausente", time: null },
+            { id: 23, name: "Perez Zegarra Genesis Valentina", status: "ausente", time: null },
+            { id: 24, name: "Pezo Lomas Erick Lander", status: "ausente", time: null },
+            { id: 25, name: "Ramirez Espino Adrian Nicolay", status: "ausente", time: null },
+            { id: 26, name: "Reategui Pinedo Angel Gabriel", status: "ausente", time: null },
+            { id: 27, name: "Rioja Vargas Jastin Isaac", status: "ausente", time: null },
+            { id: 28, name: "Rivera Mori Maxi Leonel", status: "ausente", time: null },
+            { id: 29, name: "Rodriguez Rodriguez Leonardo", status: "ausente", time: null },
+            { id: 30, name: "Rodriguez Tuesta Edwin Domingo", status: "ausente", time: null },
+            { id: 31, name: "Ruiz Pinedo Hector Alexander", status: "ausente", time: null },
+            { id: 32, name: "Sevillano Flores John Erick", status: "ausente", time: null },
+            { id: 33, name: "Zumaeta Alva Matias Tiziano", status: "ausente", time: null }
+        ];
+
+        // Variables globales
+        let qrScannerActive = false;
+        let facialScannerActive = false;
+    let nextId = students.length + 1;
+        // Función para determinar el estado según la hora de llegada
+        function getAttendanceStatus(arrivalTime) {
+            const arrival = new Date(arrivalTime);
+            const arrivalMinutes = arrival.getHours() * 60 + arrival.getMinutes();
+            const sevenForty = 7 * 60 + 40;  // 7:40 AM
+            const eightAM = 8 * 60;          // 8:00 AM
+            
+            if (arrivalMinutes <= sevenForty) {
+                return 'presente';
+            } else if (arrivalMinutes < eightAM) {
+                return 'tardanza';
+            } else {
+                return 'tardanza';
+            }
+        }
+
+        // Función para marcar asistencia
+        function markAttendance(id, customTime) {
+            const now = customTime || new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { hour12: false });
+            const status = getAttendanceStatus(now);
+            
+            students = students.map(student => 
+                student.id === id 
+                    ? { ...student, status: status, time: timeString }
+                    : student
+            );
+            
+            updateDisplay();
+        }
+
+        // Función para cambiar estado manualmente
+        function toggleAttendance(id) {
+            const student = students.find(s => s.id === id);
+            if (!student) return;
+            
+            let newStatus;
+            switch(student.status) {
+                case 'ausente': newStatus = 'presente'; break;
+                case 'presente': newStatus = 'tardanza'; break;
+                case 'tardanza': newStatus = 'falta'; break;
+                case 'falta': newStatus = 'ausente'; break;
+                default: newStatus = 'presente';
+            }
+            
+            students = students.map(student => 
+                student.id === id 
+                    ? { 
+                        ...student, 
+                        status: newStatus,
+                        time: newStatus !== 'ausente' ? new Date().toLocaleTimeString('es-ES', { hour12: false }) : null
+                    }
+                    : student
+            );
+            
+            updateDisplay();
+        }
+
+        // Función para eliminar estudiante
+        function removeStudent(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este estudiante?')) {
+                students = students.filter(student => student.id !== id);
+                updateDisplay();
+            }
+        }
+
+        // Función para agregar estudiante
+        function addStudent() {
+            const nameInput = document.getElementById('newStudentName');
+            const name = nameInput.value.trim();
+            
+            if (name) {
+                const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
+                students.push({
+                    id: newId,
+                    name: name,
+                    status: 'ausente',
+                    time: null
+                });
+                
+                nameInput.value = '';
+                document.getElementById('addStudentForm').classList.add('hidden');
+                updateDisplay();
+            }
+        }
+
+        // Función para resetear asistencia
+        function resetAllAttendance() {
+            if (confirm('¿Estás seguro de que quieres resetear toda la asistencia?')) {
+                students = students.map(student => ({
+                    ...student,
+                    status: 'ausente',
+                    time: null
+                }));
+                updateDisplay();
+            }
+        }
+
+        // Función para simular escaneo QR
+        function simulateQRScan() {
+            if (qrScannerActive || students.length === 0) return;
+            
+            qrScannerActive = true;
+            const btn = document.getElementById('qrScanBtn');
+            const scanner = document.getElementById('qrScanner');
+            const result = document.getElementById('scanResult');
+            const resultText = document.getElementById('scanResultText');
+            
+            btn.innerHTML = '📱 Escaneando...';
+            btn.className = 'w-full p-4 rounded-lg font-semibold bg-yellow-100 text-yellow-800 cursor-not-allowed';
+            scanner.classList.remove('hidden');
+            
+            resultText.textContent = 'Escaneando código QR...';
+            result.classList.remove('hidden');
+            
+            setTimeout(() => {
+                const randomStudent = students[Math.floor(Math.random() * students.length)];
+                resultText.textContent = `QR detectado: ${randomStudent.name}`;
+                markAttendance(randomStudent.id);
+                
+                setTimeout(() => {
+                    qrScannerActive = false;
+                    btn.innerHTML = '📱 Escanear Código QR';
+                    btn.className = 'w-full p-4 rounded-lg font-semibold transition-all duration-300 bg-blue-500 hover:bg-blue-600 text-white transform hover:scale-105';
+                    scanner.classList.add('hidden');
+                    result.classList.add('hidden');
+                }, 2000);
+            }, 2000);
+        }
+
+        // Función para simular reconocimiento facial
+        function simulateFacialRecognition() {
+            if (facialScannerActive || students.length === 0) return;
+            
+            facialScannerActive = true;
+            const btn = document.getElementById('faceRecognitionBtn');
+            const scanner = document.getElementById('faceScanner');
+            const result = document.getElementById('scanResult');
+            const resultText = document.getElementById('scanResultText');
+            
+            btn.innerHTML = '📸 Analizando...';
+            btn.className = 'w-full p-4 rounded-lg font-semibold bg-yellow-100 text-yellow-800 cursor-not-allowed';
+            scanner.classList.remove('hidden');
+            
+            resultText.textContent = 'Analizando rostro...';
+            result.classList.remove('hidden');
+            
+            setTimeout(() => {
+                const randomStudent = students[Math.floor(Math.random() * students.length)];
+                resultText.textContent = `Rostro reconocido: ${randomStudent.name}`;
+                markAttendance(randomStudent.id);
+                
+                setTimeout(() => {
+                    facialScannerActive = false;
+                    btn.innerHTML = '📸 Acceso Facial';
+                    btn.className = 'w-full p-4 rounded-lg font-semibold transition-all duration-300 bg-green-500 hover:bg-green-600 text-white transform hover:scale-105';
+                    scanner.classList.add('hidden');
+                    result.classList.add('hidden');
+                }, 2000);
+            }, 3000);
+        }
+
+        // Función para marcar hora personalizada
+        function markCustomTime(id) {
+            const customTime = prompt("Ingrese la hora (formato HH:MM, ej: 07:35):");
+            if (customTime && /^\d{1,2}:\d{2}$/.test(customTime)) {
+                const [hours, minutes] = customTime.split(':');
+                const today = new Date();
+                today.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+                markAttendance(id, today);
+            } else if (customTime) {
+                alert('Formato de hora inválido. Use HH:MM (ej: 07:35)');
+            }
+        }
+
+        // Función para actualizar la visualización
+        function updateDisplay() {
+            updateStudentList();
+            updateSummary();
+            updateHeader();
+        }
+
+        // Función para actualizar la lista de estudiantes
+        function updateStudentList() {
+            const studentList = document.getElementById('studentList');
+            if (!studentList) return;
+            
+            studentList.innerHTML = '';
+            
+            students.forEach((student, index) => {
+                const statusColors = {
+                    'presente': 'bg-green-50',
+                    'tardanza': 'bg-yellow-50',
+                    'falta': 'bg-red-50',
+                    'ausente': ''
+                };
+                
+                const statusBadgeColors = {
+                    'presente': 'bg-green-100 text-green-800',
+                    'tardanza': 'bg-yellow-100 text-yellow-800',
+                    'falta': 'bg-red-100 text-red-800',
+                    'ausente': 'bg-gray-100 text-gray-800'
+                };
+                
+                const statusText = {
+                    'presente': 'Presente',
+                    'tardanza': 'Tardanza',
+                    'falta': 'Falta',
+                    'ausente': 'Ausente'
+                };
+                
+                const buttonColors = {
+                    'presente': 'bg-green-100 text-green-600 hover:bg-green-200',
+                    'tardanza': 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200',
+                    'falta': 'bg-red-100 text-red-600 hover:bg-red-200',
+                    'ausente': 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                };
+                
+                const buttonIcons = {
+                    'presente': '✅',
+                    'tardanza': '⏰',
+                    'falta': '❌',
+                    'ausente': '○'
+                };
+                
+                const div = document.createElement('div');
+                div.className = `flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${statusColors[student.status]}`;
+                
+                div.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-500 w-8">${index + 1}</span>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-800">[${student.id}] ${student.name}</h3>
+
+                            <div class="flex items-center gap-4 mt-1">
+                                ${student.time ? `<p class="text-xs text-gray-600 flex items-center gap-1">
+                                    🕐 ${student.time}
+                                </p>` : ''}
+                                <span class="px-2 py-1 rounded-full text-xs font-medium ${statusBadgeColors[student.status]}">
+                                    ${statusText[student.status]}
+                                </span>
+                            </div>
+                            <div class="flex gap-2 mt-2">
+                                <button onclick="markAttendance(${student.id})" class="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
+                                    Marcar Ahora
+                                </button>
+                                <button onclick="markCustomTime(${student.id})" class="px-3 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-600 transition-colors">
+                                    Hora Custom
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleAttendance(${student.id})" class="p-2 rounded-lg transition-colors ${buttonColors[student.status]}" title="Cambiar estado">
+                            ${buttonIcons[student.status]}
+                        </button>
+                        
+                        <button onclick="removeStudent(${student.id})" class="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors" title="Eliminar estudiante">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                
+                studentList.appendChild(div);
+            });
+        }
+
+        // Función para actualizar el resumen
+        function updateSummary() {
+            const presentStudents = students.filter(s => s.status === 'presente').length;
+            const lateStudents = students.filter(s => s.status === 'tardanza').length;
+            const absentStudents = students.filter(s => s.status === 'falta').length;
+            const totalStudents = students.length;
+            
+            const presentEl = document.getElementById('presentCount');
+            const lateEl = document.getElementById('lateCount');
+            const absentEl = document.getElementById('absentCount');
+            const totalEl = document.getElementById('totalCount');
+            const percentageEl = document.getElementById('attendancePercentage');
+            
+            if (presentEl) presentEl.textContent = presentStudents;
+            if (lateEl) lateEl.textContent = lateStudents;
+            if (absentEl) absentEl.textContent = absentStudents;
+            if (totalEl) totalEl.textContent = totalStudents;
+            if (percentageEl) {
+                const percentage = totalStudents > 0 ? Math.round(((presentStudents + lateStudents) / totalStudents) * 100) : 0;
+                percentageEl.textContent = percentage + '%';
+            }
+        }
+
+        // Función para actualizar el header
+        function updateHeader() {
+            const presentStudents = students.filter(s => s.status === 'presente').length;
+            const lateStudents = students.filter(s => s.status === 'tardanza').length;
+            const totalStudents = students.length;
+            
+            const attendanceEl = document.getElementById('attendanceCount');
+            const totalEl = document.getElementById('totalStudents');
+            
+            if (attendanceEl) attendanceEl.textContent = `${presentStudents + lateStudents}/${totalStudents}`;
+            if (totalEl) totalEl.textContent = totalStudents;
+        }
+
+        // Función para verificar faltas automáticas
+        function checkForAbsences() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const eightAM = 8 * 60; // 8:00 AM
+            
+            if (currentMinutes >= eightAM) {
+                let updated = false;
+                students = students.map(student => {
+                    if (student.status === 'ausente') {
+                        updated = true;
+                        return { ...student, status: 'falta' };
+                    }
+                    return student;
+                });
+                
+                if (updated) {
+                    updateDisplay();
+                }
+            }
+        }
+
+        // Función para exportar datos
+        function exportAttendanceData() {
+            const data = {
+                date: new Date().toLocaleDateString('es-ES'),
+                students: students,
+                summary: {
+                    present: students.filter(s => s.status === 'presente').length,
+                    late: students.filter(s => s.status === 'tardanza').length,
+                    absent: students.filter(s => s.status === 'falta').length,
+                    total: students.length
+                }
+            };
+            
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `asistencia_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Inicialización cuando carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Mostrar fecha actual
+                const dateEl = document.getElementById('currentDate');
+                if (dateEl) dateEl.textContent = new Date().toLocaleDateString('es-ES');
+                
+                // Event listeners para botones
+                const qrBtn = document.getElementById('qrScanBtn');
+                const faceBtn = document.getElementById('faceRecognitionBtn');
+                const addBtn = document.getElementById('addStudentBtn');
+                const confirmBtn = document.getElementById('confirmAddBtn');
+                const cancelBtn = document.getElementById('cancelAddBtn');
+                const resetBtn = document.getElementById('resetAttendanceBtn');
+                const exportBtn = document.getElementById('exportBtn');
+                const nameInput = document.getElementById('newStudentName');
+                
+                if (qrBtn) qrBtn.addEventListener('click', simulateQRScan);
+                if (faceBtn) faceBtn.addEventListener('click', simulateFacialRecognition);
+                
+                if (addBtn) addBtn.addEventListener('click', function() {
+                    const form = document.getElementById('addStudentForm');
+                    if (form) form.classList.toggle('hidden');
+                });
+                
+                if (confirmBtn) confirmBtn.addEventListener('click', addStudent);
+                if (cancelBtn) cancelBtn.addEventListener('click', function() {
+                    const form = document.getElementById('addStudentForm');
+                    const input = document.getElementById('newStudentName');
+                    if (form) form.classList.add('hidden');
+                    if (input) input.value = '';
+                });
+                
+                if (resetBtn) resetBtn.addEventListener('click', resetAllAttendance);
+                if (exportBtn) exportBtn.addEventListener('click', exportAttendanceData);
+                
+                if (nameInput) {
+                    nameInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            addStudent();
+                        }
+                    });
+                }
+                
+                // Inicializar display
+                updateDisplay();
+                
+                // Verificar faltas cada minuto
+                setInterval(checkForAbsences, 60000);
+                checkForAbsences(); // Verificar inmediatamente al cargar
+                
+                console.log('Sistema de Control de Asistencia inicializado correctamente');
+                
+            } catch (error) {
+                console.error('Error al inicializar:', error);
+            }
+        });
+        // Botón "Agregar"
+        const confirmAddBtn = document.getElementById("confirmAddBtn");
+
+        confirmAddBtn.addEventListener("click", () => {
+            const name = document.getElementById("newStudentName").value.trim();
+            if (name !== "") {
+                students.push({
+                    id: nextId++,
+                    name: name,
+                    status: "ausente",
+                    time: null
+                });
+
+                updateStudentList(); 
+                document.getElementById("newStudentName").value = "";
+                document.getElementById("addStudentForm").classList.add("hidden");
+            }
+        });
+    </script>
+</body>
+</html>
